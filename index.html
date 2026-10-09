@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>OMASO</title>
+<meta name="description" content="Documentos organizados. Decisões inteligentes.">
+<meta name="theme-color" content="#111111">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="OMASO">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@500;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#111;--card:#1a1917;--line:#35312b;--fg:#f2ede4;--muted:#a49b8d;--gold:#d9b57e}
+*{box-sizing:border-box}html,body{height:100%}
+body{margin:0;background:var(--ink);color:var(--fg);font-family:"Source Sans 3",system-ui,sans-serif;display:flex;align-items:center;justify-content:center;padding:24px 16px}
+main{width:min(420px,100%);display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+img{width:112px;height:112px;border-radius:24px}
+h1{font-family:Lexend,system-ui,sans-serif;font-weight:700;letter-spacing:.1em;font-size:2.2rem;margin:4px 0 0}
+.tag{color:var(--gold);margin:0}
+a.go{display:inline-block;background:var(--gold);color:#1b1610;text-decoration:none;font-family:Lexend,system-ui,sans-serif;font-weight:700;letter-spacing:.06em;padding:14px 28px;border-radius:10px;margin-top:10px}
+a.go:hover{background:#ecc995}
+button.inst{background:none;border:1px solid var(--line);color:var(--fg);padding:10px 18px;border-radius:10px;font:inherit;cursor:pointer}
+.how{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;text-align:left;font-size:.92rem;color:var(--muted);width:100%}
+.how b{color:var(--fg)}
+.how p{margin:6px 0}
+</style>
+</head>
+<body>
+<main>
+  <img src="icon-512.png" alt="Logo do OMASO">
+  <h1>OMASO</h1>
+  <p class="tag">Documentos organizados. Decisões inteligentes.</p>
+  <a class="go" id="go" href="https://claude.ai/artifact/XDdWD1hLS15qPxLnLZ8jY3">ABRIR OMASO</a>
+  <button class="inst" id="inst" hidden>Instalar o OMASO neste aparelho</button>
+  <div class="how" id="how">
+    <p><b>Para ter o OMASO com este ícone:</b></p>
+    <p><b>Computador (Chrome):</b> clique no ícone de instalar na barra de endereço, ou em ⋮ → Transmitir, salvar e compartilhar → Instalar página como app.</p>
+    <p><b>Android (Chrome):</b> ⋮ → Adicionar à tela inicial → Instalar.</p>
+    <p><b>iPhone (Safari):</b> Compartilhar → Adicionar à Tela de Início.</p>
+  </div>
+</main>
+<script>
+const DEST=document.getElementById('go').href;
+const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true||new URLSearchParams(location.search).has('app');
+if(standalone){document.getElementById('how').hidden=true;setTimeout(()=>location.replace(DEST),300)}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
+let ev=null;addEventListener('beforeinstallprompt',e=>{e.preventDefault();ev=e;const b=document.getElementById('inst');b.hidden=false;b.onclick=async()=>{ev.prompt();await ev.userChoice;b.hidden=true}});
+</script>
+</body>
+</html>
