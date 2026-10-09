@@ -1,0 +1,2 @@
+# omaso
+Lançador do OMASO
