@@ -39,6 +39,134 @@ h2{font-family:Lexend,system-ui,sans-serif;font-weight:500;font-size:1.05rem;mar
 .how b{color:var(--fg)}
 .how p{margin:4px 0}
 [hidden]{display:none!important}
+.fld{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.fld input{flex:1 1 220px;min-width:0;background:var(--card2);border:1px solid var(--line);border-radius:8px;color:var(--fg);padding:10px 12px;font:inherit;font-size:.95rem}
+.fld input:focus{outline:2px solid var(--gold);outline-offset:1px}
+.ok{color:#9fd3a8;font-size:.9rem;margin-top:8px}
+.err{color:#ec8f7e;font-size:.9rem;margin-top:8px}
+.btn:disabled{opacity:.45;cursor:default}
+.dest{font-size:.85rem;color:var(--muted);word-break:break-all}
+</style>
+</head>
+<body>
+<main>
+  <img class="logo" src="icon-512.png" alt="Logo do OMASO">
+  <h1>OMASO</h1>
+  <p class="tag">Documentos organizados. Decisões inteligentes.</p>
+
+  <!-- Primeira visita: passo a passo -->
+  <section id="welcome" hidden style="width:100%;display:flex;flex-direction:column;gap:12px;align-items:center">
+    <h2>Bem-vindo! Três passos para começar</h2>
+    <ol class="steps">
+      <li><span class="n">1</span><div><b>Tenha o Claude</b>
+        <p>O OMASO funciona dentro do Claude. Crie sua conta (é grátis) com o seu e-mail e, se quiser, instale o aplicativo no computador ou no celular.</p>
+        <div class="acts"><a class="btn sec" href="https://claude.ai/login" target="_blank" rel="noopener">Criar conta ou entrar</a><a class="btn sec" href="https://claude.ai/download" target="_blank" rel="noopener">Baixar o Claude</a></div></div></li>
+      <li><span class="n">2</span><div><b>Coloque o link do seu OMASO</b>
+        <p>Cada pessoa tem o seu próprio OMASO, e só quem tem acesso consegue abrir. Quem montou o seu OMASO (ou quem convidou você para usar o dele) te manda um link que começa com <b>claude.ai/artifact/</b>. Se for usar o OMASO de outra pessoa, mande para ela o e-mail que você usou no Claude, para ela liberar o acesso e te passar a senha.</p>
+        <div class="fld"><input id="lnk" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="Cole aqui o link do seu OMASO"><button class="btn sec" id="save" type="button">Salvar</button></div>
+        <div class="ok" id="okmsg" hidden></div><div class="err" id="errmsg" hidden></div></div></li>
+      <li><span class="n">3</span><div><b>Instale o OMASO neste aparelho</b>
+        <p>Assim ele fica com este ícone na área de trabalho ou na tela inicial, como um aplicativo.</p>
+        <div class="acts"><button class="btn sec inst" type="button" hidden>Instalar o OMASO</button></div>
+        <div class="how how-txt"></div></div></li>
+    </ol>
+    <button class="btn" id="done" type="button" disabled>Pronto, abrir o OMASO</button>
+    <p class="dest" id="needlink">Coloque o link do seu OMASO no passo 2 para continuar.</p>
+  </section>
+
+  <!-- Visitas seguintes -->
+  <section id="home" hidden style="width:100%;display:flex;flex-direction:column;gap:12px;align-items:center">
+    <a class="btn" id="go" href="#">ABRIR OMASO</a>
+    <p class="dest" id="destinfo"></p>
+    <button class="btn sec inst" type="button" hidden>Instalar o OMASO neste aparelho</button>
+    <button class="link" id="again" type="button">Trocar o link ou ver o passo a passo</button>
+  </section>
+</main>
+<script>
+const $=s=>document.querySelector(s);
+const qs=new URLSearchParams(location.search);
+const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true||qs.has('app');
+const get=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+const set=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+const ua=navigator.userAgent;
+const isIOS=/iPhone|iPad|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+const isAndroid=/Android/.test(ua);
+$('.how-txt').innerHTML=isIOS?'<p><b>No iPhone (Safari):</b> toque em Compartilhar e depois em <b>Adicionar à Tela de Início</b>.</p>'
+  :isAndroid?'<p><b>No Android (Chrome):</b> toque em ⋮ e depois em <b>Adicionar à tela inicial</b> → <b>Instalar</b>.</p>'
+  :'<p><b>No computador (Chrome ou Edge):</b> clique em “Instalar o OMASO” (quando aparecer) ou no ícone de instalar na barra de endereço.</p><p>Celular: no Android, Chrome → ⋮ → Adicionar à tela inicial. No iPhone, Safari → Compartilhar → Adicionar à Tela de Início.</p>';
+/* link do OMASO de cada pessoa, guardado só neste aparelho */
+function norm(v){v=String(v||'').trim();if(!v)return null;
+  if(/^[A-Za-z0-9_-]{10,}$/.test(v))return 'https://claude.ai/artifact/'+v;
+  if(!/^https?:\/\//i.test(v))v='https://'+v;
+  let u;try{u=new URL(v)}catch(e){return null}
+  if(u.hostname!=='claude.ai')return null;
+  const m=u.pathname.match(/^\/(code\/)?artifact\/([A-Za-z0-9_-]+)\/?$/);if(!m)return null;
+  return 'https://claude.ai/'+(m[1]||'')+'artifact/'+m[2]}
+let DEST=norm(get('omaso.destino'));
+function curto(d){return d?d.replace('https://',''):''}
+function paint(){const has=!!DEST;
+  $('#done').disabled=!has;$('#needlink').hidden=has;
+  $('#go').href=DEST||'#';$('#destinfo').textContent=has?'Este aparelho abre: '+curto(DEST):'';
+  if(has){$('#lnk').value=DEST;$('#okmsg').hidden=false;$('#okmsg').textContent='✓ Link salvo neste aparelho.'}}
+function salvar(v,quiet){const d=norm(v);
+  if(!d){$('#okmsg').hidden=true;$('#errmsg').hidden=false;$('#errmsg').textContent='Esse link não parece ser de um OMASO. Ele começa com claude.ai/artifact/.';return false}
+  DEST=d;set('omaso.destino',d);$('#errmsg').hidden=true;paint();return true}
+$('#save').onclick=()=>salvar($('#lnk').value);
+$('#lnk').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();salvar($('#lnk').value)}});
+const pre=qs.get('l')||qs.get('link');if(pre&&salvar(pre,true)&&history.replaceState){qs.delete('l');qs.delete('link');history.replaceState(null,'',location.pathname+(qs.toString()?'?'+qs:''))}
+paint();
+function show(w){$('#welcome').hidden=w!=='welcome';$('#home').hidden=w!=='home'}
+if(standalone&&DEST){set('omaso.boasvindas','1');show('home');setTimeout(()=>location.replace(DEST),300)}
+else show(DEST&&get('omaso.boasvindas')&&!qs.has('inicio')&&!pre?'home':'welcome');
+$('#done').onclick=()=>{if(!DEST)return;set('omaso.boasvindas','1');location.href=DEST};
+$('#again').onclick=()=>show('welcome');
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
+let ev=null;addEventListener('beforeinstallprompt',e=>{e.preventDefault();ev=e;document.querySelectorAll('.inst').forEach(b=>{b.hidden=false;b.onclick=async()=>{ev.prompt();await ev.userChoice;document.querySelectorAll('.inst').forEach(x=>x.hidden=true)}})});
+addEventListener('appinstalled',()=>{set('omaso.boasvindas','1');document.querySelectorAll('.inst').forEach(x=>x.hidden=true)});
+</script>
+</body>
+</html>
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>OMASO</title>
+<meta name="description" content="Documentos organizados. Decisões inteligentes.">
+<meta name="theme-color" content="#111111">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="OMASO">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@500;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#111;--card:#1a1917;--card2:#23211e;--line:#35312b;--fg:#f2ede4;--muted:#a49b8d;--gold:#d9b57e}
+*{box-sizing:border-box}html,body{min-height:100%}
+body{margin:0;background:var(--ink);color:var(--fg);font-family:"Source Sans 3",system-ui,sans-serif;display:flex;align-items:center;justify-content:center;padding:28px 16px calc(28px + env(safe-area-inset-bottom,0px))}
+main{width:min(460px,100%);display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+img.logo{width:104px;height:104px;border-radius:22px}
+h1{font-family:Lexend,system-ui,sans-serif;font-weight:700;letter-spacing:.1em;font-size:2.2rem;margin:4px 0 0}
+h2{font-family:Lexend,system-ui,sans-serif;font-weight:500;font-size:1.05rem;margin:0}
+.tag{color:var(--gold);margin:0}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--gold);color:#1b1610;text-decoration:none;font-family:Lexend,system-ui,sans-serif;font-weight:700;letter-spacing:.05em;padding:13px 24px;border-radius:10px;border:0;cursor:pointer;font-size:1rem}
+.btn:hover{background:#ecc995}
+.btn.sec{background:none;color:var(--fg);border:1px solid var(--line);font-family:inherit;font-weight:600;letter-spacing:0;padding:10px 16px;font-size:.95rem}
+.btn.sec:hover{border-color:var(--gold)}
+.link{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font:inherit;font-size:.9rem}
+.steps{list-style:none;margin:6px 0 0;padding:0;width:100%;display:flex;flex-direction:column;gap:10px;text-align:left}
+.steps li{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:grid;grid-template-columns:32px minmax(0,1fr);gap:12px}
+.steps .n{width:30px;height:30px;border-radius:50%;background:var(--gold);color:#1b1610;display:flex;align-items:center;justify-content:center;font-family:Lexend,system-ui,sans-serif;font-weight:700}
+.steps p{margin:4px 0 0;color:var(--muted);font-size:.93rem;line-height:1.4}
+.steps .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.how{background:var(--card2);border-radius:8px;padding:10px 12px;margin-top:8px;font-size:.88rem;color:var(--muted)}
+.how b{color:var(--fg)}
+.how p{margin:4px 0}
+[hidden]{display:none!important}
 </style>
 </head>
 <body>
