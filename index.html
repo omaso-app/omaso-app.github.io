@@ -17,41 +17,81 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@500;700&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
 <style>
-:root{--ink:#111;--card:#1a1917;--line:#35312b;--fg:#f2ede4;--muted:#a49b8d;--gold:#d9b57e}
-*{box-sizing:border-box}html,body{height:100%}
-body{margin:0;background:var(--ink);color:var(--fg);font-family:"Source Sans 3",system-ui,sans-serif;display:flex;align-items:center;justify-content:center;padding:24px 16px}
-main{width:min(420px,100%);display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
-img{width:112px;height:112px;border-radius:24px}
+:root{--ink:#111;--card:#1a1917;--card2:#23211e;--line:#35312b;--fg:#f2ede4;--muted:#a49b8d;--gold:#d9b57e}
+*{box-sizing:border-box}html,body{min-height:100%}
+body{margin:0;background:var(--ink);color:var(--fg);font-family:"Source Sans 3",system-ui,sans-serif;display:flex;align-items:center;justify-content:center;padding:28px 16px calc(28px + env(safe-area-inset-bottom,0px))}
+main{width:min(460px,100%);display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+img.logo{width:104px;height:104px;border-radius:22px}
 h1{font-family:Lexend,system-ui,sans-serif;font-weight:700;letter-spacing:.1em;font-size:2.2rem;margin:4px 0 0}
+h2{font-family:Lexend,system-ui,sans-serif;font-weight:500;font-size:1.05rem;margin:0}
 .tag{color:var(--gold);margin:0}
-a.go{display:inline-block;background:var(--gold);color:#1b1610;text-decoration:none;font-family:Lexend,system-ui,sans-serif;font-weight:700;letter-spacing:.06em;padding:14px 28px;border-radius:10px;margin-top:10px}
-a.go:hover{background:#ecc995}
-button.inst{background:none;border:1px solid var(--line);color:var(--fg);padding:10px 18px;border-radius:10px;font:inherit;cursor:pointer}
-.how{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;text-align:left;font-size:.92rem;color:var(--muted);width:100%}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--gold);color:#1b1610;text-decoration:none;font-family:Lexend,system-ui,sans-serif;font-weight:700;letter-spacing:.05em;padding:13px 24px;border-radius:10px;border:0;cursor:pointer;font-size:1rem}
+.btn:hover{background:#ecc995}
+.btn.sec{background:none;color:var(--fg);border:1px solid var(--line);font-family:inherit;font-weight:600;letter-spacing:0;padding:10px 16px;font-size:.95rem}
+.btn.sec:hover{border-color:var(--gold)}
+.link{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font:inherit;font-size:.9rem}
+.steps{list-style:none;margin:6px 0 0;padding:0;width:100%;display:flex;flex-direction:column;gap:10px;text-align:left}
+.steps li{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:grid;grid-template-columns:32px minmax(0,1fr);gap:12px}
+.steps .n{width:30px;height:30px;border-radius:50%;background:var(--gold);color:#1b1610;display:flex;align-items:center;justify-content:center;font-family:Lexend,system-ui,sans-serif;font-weight:700}
+.steps p{margin:4px 0 0;color:var(--muted);font-size:.93rem;line-height:1.4}
+.steps .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.how{background:var(--card2);border-radius:8px;padding:10px 12px;margin-top:8px;font-size:.88rem;color:var(--muted)}
 .how b{color:var(--fg)}
-.how p{margin:6px 0}
+.how p{margin:4px 0}
+[hidden]{display:none!important}
 </style>
 </head>
 <body>
 <main>
-  <img src="icon-512.png" alt="Logo do OMASO">
+  <img class="logo" src="icon-512.png" alt="Logo do OMASO">
   <h1>OMASO</h1>
   <p class="tag">Documentos organizados. Decisões inteligentes.</p>
-  <a class="go" id="go" href="https://claude.ai/artifact/XDdWD1hLS15qPxLnLZ8jY3">ABRIR OMASO</a>
-  <button class="inst" id="inst" hidden>Instalar o OMASO neste aparelho</button>
-  <div class="how" id="how">
-    <p><b>Para ter o OMASO com este ícone:</b></p>
-    <p><b>Computador (Chrome):</b> clique no ícone de instalar na barra de endereço, ou em ⋮ → Transmitir, salvar e compartilhar → Instalar página como app.</p>
-    <p><b>Android (Chrome):</b> ⋮ → Adicionar à tela inicial → Instalar.</p>
-    <p><b>iPhone (Safari):</b> Compartilhar → Adicionar à Tela de Início.</p>
-  </div>
+
+  <!-- Primeira visita: passo a passo -->
+  <section id="welcome" hidden style="width:100%;display:flex;flex-direction:column;gap:12px;align-items:center">
+    <h2>Bem-vindo! Três passos para começar</h2>
+    <ol class="steps">
+      <li><span class="n">1</span><div><b>Tenha o Claude</b>
+        <p>O OMASO funciona dentro do Claude. Crie sua conta (é grátis) com o seu e-mail e, se quiser, instale o aplicativo no computador ou no celular.</p>
+        <div class="acts"><a class="btn sec" href="https://claude.ai/login" target="_blank" rel="noopener">Criar conta ou entrar</a><a class="btn sec" href="https://claude.ai/download" target="_blank" rel="noopener">Baixar o Claude</a></div></div></li>
+      <li><span class="n">2</span><div><b>Peça acesso ao administrador</b>
+        <p>O OMASO é privado. Mande para o administrador o e-mail que você usou no Claude. Ele vai liberar o acesso e te passar a sua senha do OMASO.</p></div></li>
+      <li><span class="n">3</span><div><b>Instale o OMASO neste aparelho</b>
+        <p>Assim ele fica com este ícone na área de trabalho ou na tela inicial, como um aplicativo.</p>
+        <div class="acts"><button class="btn sec inst" type="button" hidden>Instalar o OMASO</button></div>
+        <div class="how how-txt"></div></div></li>
+    </ol>
+    <button class="btn" id="done" type="button">Pronto, abrir o OMASO</button>
+  </section>
+
+  <!-- Visitas seguintes -->
+  <section id="home" hidden style="width:100%;display:flex;flex-direction:column;gap:12px;align-items:center">
+    <a class="btn" id="go" href="https://claude.ai/artifact/XDdWD1hLS15qPxLnLZ8jY3">ABRIR OMASO</a>
+    <button class="btn sec inst" type="button" hidden>Instalar o OMASO neste aparelho</button>
+    <button class="link" id="again" type="button">Ver o passo a passo de novo</button>
+  </section>
 </main>
 <script>
-const DEST=document.getElementById('go').href;
-const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true||new URLSearchParams(location.search).has('app');
-if(standalone){document.getElementById('how').hidden=true;setTimeout(()=>location.replace(DEST),300)}
+const DEST="https://claude.ai/artifact/XDdWD1hLS15qPxLnLZ8jY3";
+const $=s=>document.querySelector(s);
+const qs=new URLSearchParams(location.search);
+const standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true||qs.has('app');
+const get=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+const set=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+const ua=navigator.userAgent;
+const isIOS=/iPhone|iPad|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+const isAndroid=/Android/.test(ua);
+$('.how-txt').innerHTML=isIOS?'<p><b>No iPhone (Safari):</b> toque em Compartilhar e depois em <b>Adicionar à Tela de Início</b>.</p>'
+  :isAndroid?'<p><b>No Android (Chrome):</b> toque em ⋮ e depois em <b>Adicionar à tela inicial</b> → <b>Instalar</b>.</p>'
+  :'<p><b>No computador (Chrome ou Edge):</b> clique em “Instalar o OMASO” (quando aparecer) ou no ícone de instalar na barra de endereço.</p><p>Celular: no Android, Chrome → ⋮ → Adicionar à tela inicial. No iPhone, Safari → Compartilhar → Adicionar à Tela de Início.</p>';
+function show(w){$('#welcome').hidden=w!=='welcome';$('#home').hidden=w!=='home'}
+if(standalone){set('omaso.boasvindas','1');show('home');setTimeout(()=>location.replace(DEST),300)}
+else show(get('omaso.boasvindas')&&!qs.has('inicio')?'home':'welcome');
+$('#done').onclick=()=>{set('omaso.boasvindas','1');location.href=DEST};
+$('#again').onclick=()=>show('welcome');
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{})}
-let ev=null;addEventListener('beforeinstallprompt',e=>{e.preventDefault();ev=e;const b=document.getElementById('inst');b.hidden=false;b.onclick=async()=>{ev.prompt();await ev.userChoice;b.hidden=true}});
+let ev=null;addEventListener('beforeinstallprompt',e=>{e.preventDefault();ev=e;document.querySelectorAll('.inst').forEach(b=>{b.hidden=false;b.onclick=async()=>{ev.prompt();await ev.userChoice;document.querySelectorAll('.inst').forEach(x=>x.hidden=true)}})});
+addEventListener('appinstalled',()=>{set('omaso.boasvindas','1');document.querySelectorAll('.inst').forEach(x=>x.hidden=true)});
 </script>
 </body>
 </html>
